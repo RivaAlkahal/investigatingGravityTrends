@@ -1,0 +1,45 @@
+#! /bin/bash
+
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOG_DIR="$SCRIPT_DIR/logs"
+mkdir -p "$LOG_DIR"
+visu=1
+nqperdim=3
+mapping=2
+xi=6
+blob_eta=20
+blobFrac=1
+blob_mass=-220e18
+blob_z=2389.5e3
+blob_R=1400e3
+blob_depth=1300e3
+blob_thickness=400e3
+blob_theta=0.1438
+
+crust_rho=3050
+crust_eta=23
+fractionsCrusteta=1
+crust_depth=60e3
+
+lithosphere_rho=3550
+lithosphere_eta=23
+fractionsLTeta=1
+lithosphere_depth=83e3
+
+uppermantle_rho=3550
+uppermantle_eta=20
+fractionsUMeta=6
+uppermantle_depth=700e3
+
+lowermantle_rho=3550
+lowermantle_eta=21
+fractionsLMeta=1
+nelphi=1000
+nelr=64
+np_grav=25
+
+log_file="logs/lithoshereEta_${lithosphere_eta}_UpperMantleEta_${uppermantle_eta}_LowerMantleEta_${lowermantle_eta}.log"
+
+python3 "${SCRIPT_DIR}/flaps.py" $nelr $visu $nqperdim $mapping $xi $blob_eta $blob_mass $blob_z $blob_R $blob_theta $blob_depth $blob_thickness $crust_rho $crust_eta $crust_depth $lithosphere_rho $lithosphere_eta $lithosphere_depth $uppermantle_rho $uppermantle_eta $uppermantle_depth $lowermantle_rho $lowermantle_eta $nelphi $np_grav $fractionsCrusteta $fractionsLTeta $fractionsUMeta $fractionsLMeta > "$log_file"
+
