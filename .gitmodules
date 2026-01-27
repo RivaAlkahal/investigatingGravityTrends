@@ -1,4 +1,4 @@
-[submodule "tudat/tudat"]
-	path = tudat/tudat
+[submodule "external/tudat-forked/tudat"]
+	path = external/tudat-forked/tudat
 	url = https://github.com/RivaAlkahal/tudat.git
 	branch = paper
