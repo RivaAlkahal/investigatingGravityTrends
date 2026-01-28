@@ -5,11 +5,13 @@ set -euo pipefail
 MAX_PARALLEL=30                       # how many arcs to run concurrently
 ARC_CHUNK=365                          # combine every this many arcs
 START_INDEX=0
-STEP=1
-CONFIG_DIR="configs_test"                 # where config_arc_*.json live
-BASE_OUTPUT="output_test_Vikings"     # base dir for per-arc outputs
-EXEC_RUN_ARC="./parallelArcProcessVikings"      # <<< compiled single-arc executable
-EXEC_COMBINE="./computeCovariances_test_skipping"  # <<< compiled combiner 
+STEP=-1                 #set >0 to enable simple stepping or <0 otherwise
+TAKE=6                    # set >0 with skip >=0 to enable take/skip mode or <0 otherwise
+SKIP=12                    # set >=0 with take >0 to enable take/skip mode or <0 otherwise
+CONFIG_DIR="path/to/configs_test"                 # where config_arc_*.json live
+BASE_OUTPUT="path/to/output_test_Vikings"     # base dir for per-arc outputs
+EXEC_RUN_ARC="path/to/build/tudat/bin/parallelArcProcessVikings"      # <<< compiled single-arc executable
+EXEC_COMBINE="path/to/build/tudat/bin/computeCovariances_test_skipping"  # <<< compiled combiner
 
 DEBUG=${DEBUG:-0}
 
@@ -46,10 +48,24 @@ if (( NUM_ARCS > NUM_ARCS_FOUND )); then
   NUM_ARCS=$NUM_ARCS_FOUND
 fi
 
-SELECTED=()
-for ((i=START_INDEX; i<NUM_ARCS_FOUND; i+=STEP)); do
-    SELECTED+=("$i")
-done
+declare -a SELECTED=()
+
+if ((STEP >0 )) && ((TAKE <=0)); then
+    for ((i= START_INDEX; i<NUM_ARCS; i+=STEP)); do
+    SELECTED+=( "$i" )
+    done
+elif ((TAKE >0)) && ((SKIP >=0)) && ((STEP<=0)); then
+    i=$START_INDEX
+    while ((i<NUM_ARCS)); do
+    for ((j=0;j<TAKE && i+j<NUM_ARCS;++j)); do
+        SELECTED+=( $((i + j)) )
+    done
+    i=$((i+TAKE+SKIP))
+    done
+else
+    say "Config error: choose EITHER STEP>0 (and TAKE <=0), OR TAKE>0/SKIP>=0 (and STEP<=0)"
+fi
+
 TOTAL_SELECTED=${#SELECTED[@]}
 ((TOTAL_SELECTED>0)) || { say "no selected arcs"; exit 1;}
 
@@ -60,14 +76,6 @@ TOTAL_SELECTED=${#SELECTED[@]}
 say "MAX_PARALLEL=$MAX_PARALLEL, ARC_CHUNK=$ARC_CHUNK, has_wait_n=$has_wait_n"
 
 run_cmd mkdir -p "$BASE_OUTPUT"
-
-arc_out_dir() { printf '%s/output_arc_%d' "$BASE_OUTPUT" "$1"; }
-arc_done_path() { printf '%s/done.flag' "$(arc_out_dir "$1")";}
-
-arc_is_done() {
-    local idx="$1"
-    [[ -f "$(arc_done_path "$idx")" ]]
-}
 
 launch_arc() {
   local idx="$1"
@@ -123,11 +131,13 @@ combine_up_to_arc_exclusive() {
   run_cmd mkdir -p "$outdir"
   say "Combining arcs [0..(up to real arc index) $((upto))] into $outdir"
 
-  run_cmd "$EXEC_COMBINE" \
+    run_cmd "$EXEC_COMBINE" \
     --baseDir "$BASE_OUTPUT" \
     --num-arcs "$((upto + 1))" \
     --start "$START_INDEX" \
-    --step "$STEP"
+    --step "$STEP" \
+    --take "$TAKE" \
+    --skip "$SKIP"
   say "Wrote: $outdir/combined_normal.bin and $outdir/combined_covariance.bin"
 }
 

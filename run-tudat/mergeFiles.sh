@@ -12,7 +12,7 @@ set -euo pipefail
 #   - TAKE=0 and SKIP>0  -> take none
 
 
-SRC1="/output_test_MultiSats"     # base dir for per-arc outputs
+SRC1="path/to/output_test_MultiSats"     # base dir for per-arc outputs
 
 OFF1=180
 SRC_START1=0
@@ -20,14 +20,14 @@ SRC_END1=2117
 TAKE1=0
 SKIP1=0
 
-SRC2="/output_test_Vikings"
+SRC2="path/to/output_test_Vikings"
 OFF2=-34
 SRC_START2=0
 TAKE2=6
 SKIP2=12
 
 
-SRC3="output_test_EDM"
+SRC3="path/to/output_test_EDM"
 OFF3=180
 SRC_START3=2920
 SRC_END3=9999999999
@@ -35,7 +35,7 @@ TAKE3=0
 SKIP3=0
 
 
-DEST="merged_6_12"
+DEST="/path/to/merged_6_12"
 
 mkdir -p "$DEST"
 

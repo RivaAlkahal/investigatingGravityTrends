@@ -3,15 +3,15 @@ set -euo pipefail
 
 # ===== SETTINGS =====
 MAX_PARALLEL=30                       # how many arcs to run concurrently
-ARC_CHUNK=365                          # combine every this many arcs (set 1 or 2 for your test)
+ARC_CHUNK=365                          # combine every this many arcs
 START_INDEX=0 
 STEP=-1 				#set >0 to enable simple stepping or <0 otherwise
 TAKE=6					# set >0 with skip >=0 to enable take/skip mode or <0 otherwise
 SKIP=12					# set >=0 with take >0 to enable take/skip mode or <0 otherwise
-CONFIG_DIR="configs"                 # where config_arc_*.json live
-BASE_OUTPUT="output_test_MGSOnly"     # base dir for per-arc outputs
-EXEC_RUN_ARC="./parallelArcProcess"      # <<< compiled single-arc executable
-EXEC_COMBINE="./computeCovariance_test_skipping"  # <<< compiled combiner
+CONFIG_DIR="path/to/configs"                 # where config_arc_*.json live
+BASE_OUTPUT="path/to/output_test_MGSOnly"     # base dir for per-arc outputs
+EXEC_RUN_ARC="path/to/build/tudat/bin/parallelArcProcess"      # <<< compiled single-arc executable
+EXEC_COMBINE="path/to/build/tudat/bin/computeCovariance_test_skipping"  # <<< compiled combiner
 
 DEBUG=${DEBUG:-0}
 
@@ -73,7 +73,6 @@ echo "$TOTAL_SELECTED"
 [[ -x "$EXEC_RUN_ARC" ]] || die "Executable not found or not executable: $EXEC_RUN_ARC"
 [[ -x "$EXEC_COMBINE" ]] || say "WARNING: Combiner not executable yet: $EXEC_COMBINE"
 
-#say "Found $NUM_ARCS configs in $CONFIG_DIR"
 say "MAX_PARALLEL=$MAX_PARALLEL, ARC_CHUNK=$ARC_CHUNK, has_wait_n=$has_wait_n"
 
 run_cmd mkdir -p "$BASE_OUTPUT"

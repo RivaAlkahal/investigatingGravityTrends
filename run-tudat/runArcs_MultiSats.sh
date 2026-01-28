@@ -3,15 +3,15 @@ set -euo pipefail
 
 # ===== SETTINGS =====
 MAX_PARALLEL=30                       # how many arcs to run concurrently
-ARC_CHUNK=365                          # combine every this many arcs (set 1 or 2 for your test)
-START_INDEX=0 
+ARC_CHUNK=3650                          
+START_INDEX=0
 STEP=-1 				#set >0 to enable simple stepping or <0 otherwise
 TAKE=6					# set >0 with skip >=0 to enable take/skip mode or <0 otherwise
 SKIP=12					# set >=0 with take >0 to enable take/skip mode or <0 otherwise
-CONFIG_DIR="configs"                 # where config_arc_*.json live
-BASE_OUTPUT="output_test_MultiSats"     # base dir for per-arc outputs
-EXEC_RUN_ARC="./parallelArcProcessMultiSat"      # <<< compiled single-arc executable
-EXEC_COMBINE="./computeCovariance_TestMultiSat"  # <<< compiled combiner
+CONFIG_DIR="path/to/configs"                 # where config_arc_*.json live
+BASE_OUTPUT="path/to/output_test_MultiSats"     # base dir for per-arc outputs
+EXEC_RUN_ARC="path/to/build/tudat/bin/parallelArcProcessMultiSat"      # <<< compiled single-arc executable
+
 
 DEBUG=${DEBUG:-0}
 
@@ -71,7 +71,6 @@ echo "$TOTAL_SELECTED"
 ((TOTAL_SELECTED>0)) || { say "no selected arcs"; exit 1;}
 
 [[ -x "$EXEC_RUN_ARC" ]] || die "Executable not found or not executable: $EXEC_RUN_ARC"
-[[ -x "$EXEC_COMBINE" ]] || say "WARNING: Combiner not executable yet: $EXEC_COMBINE"
 
 #say "Found $NUM_ARCS configs in $CONFIG_DIR"
 say "MAX_PARALLEL=$MAX_PARALLEL, ARC_CHUNK=$ARC_CHUNK, has_wait_n=$has_wait_n"
@@ -121,23 +120,6 @@ run_chunk() {
   [[ "$DEBUG" == "1" ]] && echo "+ (dry-run) wait" || wait
 }
 
-combine_up_to_arc_exclusive() {
-  local processed="$1"                               # combine arcs [0 .. upto-1]
-  local upto="${SELECTED[$((processed-1))]}"
-  local tag="after_${processed}_sampled"
-  local outdir="${BASE_OUTPUT}/combined_${tag}"
-  run_cmd mkdir -p "$outdir"
-  say "Combining arcs [0..(up to real arc index) $((upto))] into $outdir"
-
-  run_cmd "$EXEC_COMBINE" \
-    --baseDir "$BASE_OUTPUT" \
-    --num-arcs "$((upto + 1))" \
-    --start "$START_INDEX" \
-    --step "$STEP" \
-    --take "$TAKE" \
-    --skip "$SKIP" 
-  say "Wrote: $outdir/combined_normal.bin and $outdir/combined_covariance.bin"
-}
 
 # ===== Main driver =====
 
@@ -147,7 +129,6 @@ while (( chunk_start < TOTAL_SELECTED )); do
     (( chunk_end >= TOTAL_SELECTED )) && chunk_end=$(( TOTAL_SELECTED - 1 ))
     run_chunk "$chunk_start" "$chunk_end"
     processed=$(( chunk_end + 1 ))
-    combine_up_to_arc_exclusive "$processed"
 
     chunk_start=$(( chunk_end + 1 ))
 done

@@ -288,31 +288,7 @@ match planet:
       compute_gravity=True
       gravity_model=0
       rho_core=8050
-      #nel_phi = 50
-
-      '''
-      crust_rho         = 3050 
-      crust_eta         = 1e23
-      crust_depth       = 60e3
-
-      lithosphere_rho   = 3550
-      lithosphere_eta   = 1e23
-      lithosphere_depth = 83e3
-
-      uppermantle_rho   = lithosphere_rho
-      uppermantle_eta   = 6e20
-      uppermantle_depth = 700e3 
-
-      lowermantle_rho   = 3550 
-      lowermantle_eta   = 1e21
-
-      blob_depth        = 900e3
-      blob_thickness    = 200e3
-      blob_theta        = 1700./(3396-1100+100) #np.pi/8
-      #blob_rho          = lowermantle_rho-70 
-      blob_eta          = 3e21
-      '''
-
+      
       blob_theta = blob_R/(3396e3-blob_depth)
       print(blob_R)
       print(blob_thickness)
@@ -323,14 +299,6 @@ match planet:
           blob_rho =uppermantle_rho+(blob_mass/blob_V)
       else:
           blob_rho =lowermantle_rho+(blob_mass/blob_V)
-      #blob_rho = lowermantle_rho-blob_rho
-
-      #blob_V = -1*blob_mass/blob_rho
-      #blob_rho =lowermantle_rho+(blob_mass/blob_V)
-      #print(blob_rho)
-      #blob_R = np.sqrt(blob_V/(np.pi*blob_thickness))
-      #blob_theta = blob_R/(3396e3-blob_depth)
-      #blob_rho = lowermantle_rho-blob_rho
    case _:
       exit('pb1 in flaps setup: unknown planet')
 
@@ -342,10 +310,7 @@ compute_sr1=True
 compute_sr3=True
 
 # Define a directory name based on input parameters
-#output_dir = f"50years_blobetas_nelr64testold/LithEta_{lithosphere_eta}_{lithosphere_depth}_UpperMantleEta{uppermantle_eta}_lowerMantleEta{lowermantle_eta}_depth{blob_depth}_blobEta_{blob_eta}_radius_{blob_R}_thickness_{blob_thickness}_rho_{blob_rho}"
-#output_dir = f"50years_minplumesignal_ResTest_2steps/npgrav_{np_grav}_nelr_{nelr}_nelphi_{nel_phi}"
 output_dir = f"results"
-#output_dir = f"depth_{blob_depth}_radius{blob_R}_thickness{blob_thickness}"
 os.makedirs(output_dir, exist_ok=True)  # Create directory if it doesn't exist
 
 ###############################################################################

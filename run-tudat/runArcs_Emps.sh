@@ -8,10 +8,10 @@ START_INDEX=100
 STEP=1 				#set >0 to enable simple stepping or <0 otherwise
 TAKE=-6					# set >0 with skip >=0 to enable take/skip mode or <0 otherwise
 SKIP=-12					# set >=0 with take >0 to enable take/skip mode or <0 otherwise
-CONFIG_DIR="configs"                 # where config_arc_*.json live
-BASE_OUTPUT="output_test_MGSOnlyEmpiricals"     # base dir for per-arc outputs
-EXEC_RUN_ARC="./parallelArcProcessEmpiricals"      # <<< compiled single-arc executable
-EXEC_COMBINE="./computeCovariances_ForEmps"  # <<< compiled combiner
+CONFIG_DIR="path/to/configs"                 # where config_arc_*.json live
+BASE_OUTPUT="path/to/output_test_MGSOnlyEmpiricals"     # base dir for per-arc outputs
+EXEC_RUN_ARC="path/to/build/tudat/bin/parallelArcProcessEmpiricals"      # <<< compiled single-arc executable
+EXEC_COMBINE="path/to/build/tudat/bin/computeCovariances_ForEmps"  # <<< compiled combiner
 
 DEBUG=${DEBUG:-0}
 

@@ -2,3 +2,6 @@
 	path = external/tudat-forked/tudat
 	url = https://github.com/RivaAlkahal/tudat.git
 	branch = paper
+[submodule "external/flaps-forked/flaps"]
+	path = external/flaps-forked/flaps
+	url = https://github.com/RivaAlkahal/flaps.git
