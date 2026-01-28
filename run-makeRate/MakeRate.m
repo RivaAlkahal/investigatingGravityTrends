@@ -3,7 +3,7 @@ close all
 clc;
 
 addpath('path/to/GSH/GSH-main/Tools/')
-basedir = "/path/to/flaps/results/50years_blobetas_nelr128_depths/";
+basedir = "/path/to/flaps/50years_blobetas/";
 
 %% Choose Profile
 folderPattern = {};
