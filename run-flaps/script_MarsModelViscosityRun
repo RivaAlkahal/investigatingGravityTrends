@@ -1,7 +1,6 @@
 #! /bin/bash
 
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="path/to/flaps"
 LOG_DIR="$SCRIPT_DIR/logs"
 mkdir -p "$LOG_DIR"
 visu=1
@@ -10,36 +9,67 @@ mapping=2
 xi=6
 blob_eta=20
 blobFrac=1
-blob_mass=-220e18
+blob_masses=(-220e18 -180e18 -120e18 -100e18)
 blob_z=2389.5e3
 blob_R=1400e3
-blob_depth=1300e3
+blob_depths=(1300e3 1200e3 1000e3 800e3)
 blob_thickness=400e3
 blob_theta=0.1438
 
-crust_rho=3050
-crust_eta=23
-fractionsCrusteta=1
+#(root, case118,case84, samuel)
+crust_rhos=(3050 3264 3266 3054)
+crust_etas=(23 23 23 24)
+fractionsCrustetas=(1 2 3 1)
 crust_depth=60e3
 
-lithosphere_rho=3550
-lithosphere_eta=23
-fractionsLTeta=1
-lithosphere_depth=83e3
+lithosphere_rhos=(3550 3499 3510 3432)
+lithosphere_etas=(23 23 23 22)
+fractionsLTetas=(1 2 3 4)
+lithosphere_depths=(83e3 400e3 400e3 300e3)
 
-uppermantle_rho=3550
-uppermantle_eta=20
-fractionsUMeta=6
-uppermantle_depth=700e3
+uppermantle_rhos=(3550 3579 3872 3589)
+uppermantle_etas=(20 20 21 22)
+fractionsUMetas=(6 9 9 3)
+uppermantle_depths=(700e3 896e3 896e3 1200e3)
 
-lowermantle_rho=3550
-lowermantle_eta=21
-fractionsLMeta=1
-nelphi=1000
-nelr=64
-np_grav=25
+lowermantle_rhos=(3550 3579 3872 3942)
+lowermantle_etas=(21 22 22 23)
+fractionsLMetas=(1 3 2 4)
+nelphi=2000
+nelr=128
+np_grav=49
+MAX_JOBS_CPU=25
 
-log_file="logs/lithoshereEta_${lithosphere_eta}_UpperMantleEta_${uppermantle_eta}_LowerMantleEta_${lowermantle_eta}.log"
+job_count=0
 
-python3 "${SCRIPT_DIR}/flaps.py" $nelr $visu $nqperdim $mapping $xi $blob_eta $blob_mass $blob_z $blob_R $blob_theta $blob_depth $blob_thickness $crust_rho $crust_eta $crust_depth $lithosphere_rho $lithosphere_eta $lithosphere_depth $uppermantle_rho $uppermantle_eta $uppermantle_depth $lowermantle_rho $lowermantle_eta $nelphi $np_grav $fractionsCrusteta $fractionsLTeta $fractionsUMeta $fractionsLMeta > "$log_file"
+for i in "${!lithosphere_rhos[@]}"; do
+    lithosphere_rho=${lithosphere_rhos[$i]}
+    crust_rho=${crust_rhos[$i]}
+    uppermantle_rho=${uppermantle_rhos[$i]}
+    lowermantle_rho=${lowermantle_rhos[$i]}
+    echo "$uppermantle_rho $crust_rho $lithosphere_rho $lowermantle_rho"
+    fractionsCrusteta=${fractionsCrustetas[$i]}
+    fractionsLTeta=${fractionsLTetas[$i]}
+    fractionsUMeta=${fractionsUMetas[$i]}
+    fractionsLMeta=${fractionsLMetas[$i]}
+    lithosphere_eta=${lithosphere_etas[$i]}
+    lithosphere_depth=${lithosphere_depths[$i]}
+    crust_eta=${crust_etas[$i]}
+    uppermantle_eta=${uppermantle_etas[$i]}
+    uppermantle_depth=${uppermantle_depths[$i]}
+    lowermantle_eta=${lowermantle_etas[$i]}
+    echo "$uppermantle_eta $crust_eta $lithosphere_eta $lowermantle_eta"
+    for j in "${!blob_masses[@]}"; do
+        blob_mass=${blob_masses[$j]}
+        blob_depth=${blob_depths[$j]}
+        log_file="logs/lithoshereEta_${lithosphere_eta}_UpperMantleEta_${uppermantle_eta}_LowerMantleEta_${lowermantle_eta}_blob_depth_${blob_depth}.log"
 
+        nice -n 1 python3 "${SCRIPT_DIR}/flaps.py" $nelr $visu $nqperdim $mapping $xi $blob_eta $blob_mass $blob_z $blob_R $blob_theta $blob_depth $blob_thickness $crust_rho $crust_eta $crust_depth $lithosphere_rho $lithosphere_eta $lithosphere_depth $uppermantle_rho $uppermantle_eta $uppermantle_depth $lowermantle_rho $lowermantle_eta $nelphi $np_grav $fractionsCrusteta $fractionsLTeta $fractionsUMeta $fractionsLMeta > "$log_file" 2>&1 &
+        ((job_count++))
+        if ((job_count >= MAX_JOBS_CPU)); then
+        wait
+            job_count=0
+        fi
+    done
+done
+wait
