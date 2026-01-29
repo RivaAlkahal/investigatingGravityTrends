@@ -77,6 +77,14 @@ Next, inside the tudat-bundle folder, replace the original tudat/ folder with th
 cp -r /path/to/investigatingGravityTrends/external/tudat-forked/tudat ./tudat
 ```
 
+### Install relevant SPICE kernels 
+Inside the tudat folder live the functions that are crucial to perform the analysis: `external/tudat-forked/tudat/tests_riva`. The functions that start with: `parallelArcProcess*` require indication to the paths of the installed SPICE kernels. Therefore, the user is advised to go to: `https://naif.jpl.nasa.gov/naif/data_archived.html` and install the relevant files that are indicated in the function(s) `parallelArcProcess*`. Following the installation, remember to change the path of for example:
+```
+spice_interface::loadSpiceKernelInTudat( "/path/to/mgs_map1.bsp" );
+```
+to the corresponding path at your directory.
+
+
 ### Build tudat-bundle
 From the root of tudat-bundle:
 ```bash
@@ -226,3 +234,5 @@ basedir = "/path/to/flaps/50years_blobetas/";
 
 # References
 - Tudat project: https://github.com/tudat-team
+- FLAPS code: https://github.com/cedrict/flaps
+- Bruinsma, S., Lemoine, F.G., 2002. A preliminary semiempirical thermosphere model of Mars: DTM-Mars. Journal of Geophysical Research: Planets, 107. doi.org/10.1029/2001JE001508.
